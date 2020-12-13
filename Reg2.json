@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "2aefd788-db67-44f2-9edd-89214aa54172",
+		"name": "Regres API Chainning",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ead4a3c2-2594-4b33-979a-d698a9494a94",
+						"exec": [
+							"//payload= JSON.parse(responseBody);",
+							"payload= JSON.parse(pm.response.text());",
+							"",
+							"",
+							"",
+							"var nameValue= payload.name;",
+							"var lastnameValue= payload.lastname;",
+							"var idValue= payload.id;",
+							"",
+							"console.log(\"nameValue : \"+nameValue);",
+							"console.log(\"lastnameValue : \" +lastnameValue);",
+							"console.log(\"idValue : \" + idValue);",
+							"",
+							"pm.environment.set(\"name\", nameValue);",
+							"pm.environment.set(\"lastname\", lastnameValue);",
+							"pm.environment.set(\"job\", payload.job);",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"Elif\");",
+							"});",
+							"",
+							"",
+							"postman.setNextRequest(\"GetUserList\");",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e8ff02cc-1fd2-487e-b780-a40c1c93c164",
+						"exec": [
+							"console.log(\"Before API Call id : \"+ pm.environment.get(\"id\"))",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Elif Zeynep\",\n    \"lastname\":\"Dolapci\",\n    \"job\": \"kid\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users?page=2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6bc1c1f7-816d-4b63-8cfb-20249b2aa39f",
+						"exec": [
+							"payload= JSON.parse(responseBody);",
+							"",
+							"",
+							"",
+							"postman.setNextRequest(null);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3fa478f0-6d8e-4fb1-b684-e7cd21b67a6b",
+						"exec": [
+							"",
+							"pm.environment.set(\"name\", \"Holy\");",
+							"pm.environment.set(\"lastname\", \"Moly\");",
+							"",
+							"var nameDeneme = \"George\";",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{name}}\",\n    \"lastname\":\"{{lastname}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users/{{id}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "06589ef7-94b1-4491-9038-be0c9eb22e91",
+						"exec": [
+							"payload= JSON.parse(responseBody);",
+							"",
+							"var firstname= payload.data[0].first_name;",
+							"var lastname= payload.data[0].last_name;",
+							"var idValue= payload.data[0].id;",
+							"",
+							"console.log(firstname);",
+							"console.log(lastname);",
+							"",
+							"pm.environment.set(\"id\", idValue);",
+							"pm.environment.set(\"first_name\", firstname);",
+							"pm.environment.set(\"last_name\",  lastname);",
+							"",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"George\");",
+							"});",
+							"",
+							"pm.test(\"Json value check\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data[5].first_name).to.eql(\"Rachel\");",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"postman.setNextRequest(\"UpdateUser\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users?page={{page}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "{{page}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSingleUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"postman.setNextRequest(\"UpdateUser\");"
+						],
+						"id": "abda17fc-8fbc-4f0e-a437-1129ae2279ec"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/{{id}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Covid19countries",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.covid19api.com/countries",
+					"protocol": "https",
+					"host": [
+						"api",
+						"covid19api",
+						"com"
+					],
+					"path": [
+						"countries"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d52a6a9e-555f-4acd-9d1d-70deeb38c3c5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "53e2f086-1e02-4f90-b137-8d0b73503ba3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "686e4533-618b-40c6-8b7f-505899734d43",
+			"key": "page",
+			"value": "1"
+		},
+		{
+			"id": "35ed5c53-7e25-495f-b20e-961d80112a5e",
+			"key": "url",
+			"value": "https://reqres.in/api"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
